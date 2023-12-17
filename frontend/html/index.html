@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        .container {
+            max-width: 300px;
+            margin: auto;
+            padding: 20px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="box">
+                <h1 class="title">Login</h1>
+                <div class="field">
+                    <label class="label">Username</label>
+                    <div class="control">
+                        <input class="input" type="text" id="username" placeholder="Username">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Password</label>
+                    <div class="control">
+                        <input class="input" type="password" id="password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-primary" onclick="login()">Login</button>
+                </div>
+                <div id="message" class="has-text-danger"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var requestData = {
+                username: username,
+                password: password
+            };
+
+            fetch('http://localhost:4000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Login failed');
+                }
+            })
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('userToken', data.token); // Save the token
+                    window.location.href = 'register.html'; // Redirect to register.html
+                } else {
+                    document.getElementById('message').innerHTML = 'Login failed: ' + data.message;
+                }
+            })
+            .catch((error) => {
+                document.getElementById('message').innerHTML = error.message;
+            });
+        }
+    </script>
+</body>
+</html>
